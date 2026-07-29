@@ -5,8 +5,16 @@
 commons-math3 = "3.6.1"
 guava = "33.4.6-jre"
 junit-jupiter = "5.12.1"
+jmh-core = "1.37"
+jmh-annotation = "1.37"
+jmh-gradle-plugin = "0.7.3"
+poi = "5.5.1"
 
 [libraries]
 commons-math3 = { module = "org.apache.commons:commons-math3", version.ref = "commons-math3" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh-core" }
+jmh-annotation = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh-annotation" }
+poi = { module = "org.apache.poi:poi", version.ref = "poi" }
+poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poi" }

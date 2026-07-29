@@ -13,3 +13,4 @@ plugins {
 rootProject.name = "excel_builder"
 include("lib")
 include("example")
+include("benchmark")
