@@ -1,10 +1,7 @@
 package io.github.a_azashikov.tablekit.excel;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,12 +21,8 @@ public class POIWorkbook {
     public void render(OutputStream out) throws IOException {
         var rowsCount = tables.stream().mapToInt(t -> t.getRows().size()).sum();
 
-        Path tempFilePath = Files.createTempFile("resultExcel", ".xlsx");
         try (
             var workbook = getWorkbook(rowsCount);
-            FileInputStream inputStream = new FileInputStream(
-                tempFilePath.toFile()
-            );
         ) {
             var renderer = new POIRenderer(workbook);
 
@@ -40,8 +33,6 @@ public class POIWorkbook {
             workbook.write(out);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            Files.deleteIfExists(tempFilePath);
         }
     }
 

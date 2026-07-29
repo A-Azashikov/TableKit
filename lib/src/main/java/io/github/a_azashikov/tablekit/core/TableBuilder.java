@@ -6,18 +6,18 @@ import java.util.function.Function;
 
 import io.github.a_azashikov.tablekit.core.column.ChildrenContextBase;
 import io.github.a_azashikov.tablekit.core.column.Column;
-import io.github.a_azashikov.tablekit.core.utils.ColumnUtils;
+// import io.github.a_azashikov.tablekit.core.utils.ColumnUtils;
 
 public final class TableBuilder<T> extends ChildrenContextBase<T, TableBuilder<T>> {
     private String name = "";
     private Function<T, String> rowKeyGetter = row -> row.toString();
     private final List<Column<T>> columns = new ArrayList<>();
     private final List<T> rows = new ArrayList<>();
-    private final Class<T> classz;
+    // private final Class<T> classz;
 
-    public TableBuilder(Class<T> classz) {
-        this.classz = classz;
-    }
+    // public TableBuilder(Class<T> classz) {
+    //     this.classz = classz;
+    // }
 
     public TableBuilder<T> name(String name) {
         this.name = name;
@@ -43,11 +43,11 @@ public final class TableBuilder<T> extends ChildrenContextBase<T, TableBuilder<T
         return this;
     }
 
-    public TableBuilder<T> autoColumns() {
-        ColumnUtils.generateColumns(classz).forEach(this.columns::add);
+    // public TableBuilder<T> autoColumns() {
+    //     ColumnUtils.generateColumns(classz).forEach(this.columns::add);
 
-        return this;
-    }
+    //     return this;
+    // }
 
     public Table<T> build() {
         Table<T> table = new Table<>(name, rowKeyGetter);

@@ -25,7 +25,12 @@ public class SimpleExample {
         }
         var table = Table.from(rows)
             .name("Test")
-            .autoColumns()
+            .column("Name", Row::name)
+            .column("Date", Row::date)
+            .column("Test", Row::test)
+            .column("v1", Row::c1)
+            .column("v2", Row::c2)
+            .column("v3", Row::c3)
             .build();
         Path tempFilePath = Files.createTempFile("resultExcel", ".xlsx");
         try (
