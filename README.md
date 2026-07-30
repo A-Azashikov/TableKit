@@ -18,7 +18,7 @@
 - **Декларативного DSL** — вы описываете *что* нужно отобразить, а не *как*
 - **Type-safe API** — компилятор проверяет соответствие типов данных на этапе сборки
 - **Отделения данных от представления** — рендеринг в Excel полностью изолирован от бизнес-логики
-- **Автоматизации рутины** — генерация колонок по рефлексии (`autoColumns()`), авто-выбор оптимального режима записи
+- **Автоматизации рутины** — авто-выбор оптимального режима записи (XSSFWorkbook / SXSSFWorkbook)
 
 ## Возможности
 
@@ -27,8 +27,7 @@
 | **Fluent Builder API** | Цепочка вызовов: `Table.from(rows).name("Report").column(...).build()` |
 | **Иерархические заголовки** | Вложенные группы колонок произвольной глубины |
 | **Collapsible-колонки** | Сворачиваемые группы для компактного отображения |
-| **Поддержка формул** | SUM, AVG, COUNT, MIN, MAX, +, -, *, /, IF, ссылки на ячейки |
-| **Auto Columns** | Автоматическая генерация колонок по полям Java-класса через рефлексию |
+| **Поддержка формул** | +, -, *, /, IF, ссылки на ячейки |
 | **Type-safe значения** | String, Number, Date, Formula — строгая типизация значений |
 | **Кастомизация стилей** | Шрифт, цвет, фон, границы, выравнивание, формат чисел |
 | **Excel (XLSX)** | Рендеринг в формат OOXML через Apache POI |
@@ -110,22 +109,13 @@ var table = Table.from(rows)
 ### 3. Колонки с формулами
 
 ```java
-import static io.github.a_azashikov.tablekit.core.column.data.value.formula.Formula.*;
-
 var table = Table.from(rows)
     .name("Сводка")
     .column("Наименование", Row::name)
     .column("Доход",   c -> c.title("Доход").number(Row::income))
     .column("Расход",  c -> c.title("Расход").number(Row::expense))
     .column("Прибыль", c -> c.title("Прибыль")
-        .formula((f, r) -> f.ref("Доход").sub(f.ref("Расход")))
-    )
-    .column("Налог",   c -> c.title("Налог (13%)")
-        .formula((f, r) -> f.iff(
-            f.ref("Прибыль").gt(f.val(0)),
-            f.ref("Прибыль").mul(f.val(0.13)),
-            f.val(0)
-        ))
+        .formula((f, r) -> f.sub(f.ref("Доход"), f.ref("Расход")))
     )
     .build();
 ```
@@ -135,23 +125,11 @@ var table = Table.from(rows)
 | Формула | Описание |
 |---|---|
 | `ref("ColumnName")` | Ссылка на значение в другой колонке текущей строки |
-| `val(number)` / `val(string)` | Литеральное значение |
-| `.add()`, `.sub()`, `.mul()`, `.div()` | Арифметические операции |
-| `.gt()`, `.lt()`, `.eq()` | Операторы сравнения (для IF) |
+| `val("string")` | Литеральное строковое значение |
+| `add(left, right)`, `sub(left, right)`, `mul(left, right)`, `div(left, right)` | Арифметические операции |
 | `iff(condition, thenVal, elseVal)` | Условное вычисление |
-| `SUM(range)`, `AVG(range)`, `COUNT(range)`, `MIN(range)`, `MAX(range)` | Агрегации по диапазону |
 
-### 4. Автоматическая генерация колонок
-
-```java
-// Колонки будут сгенерированы по именам и типам полей класса Row
-var table = Table.from(rows)
-    .name("Auto")
-    .autoColumns()
-    .build();
-```
-
-### 5. Кастомные стили
+### 4. Кастомные стили
 
 ```java
 var headerStyle = new CellStyleDefinition();
@@ -203,8 +181,8 @@ var table = Table.from(rows)
 
 | Класс | Назначение |
 |---|---|
-| `Table<T>` | Контейнер с колонками и строками, точка входа: `Table.of(Class)` / `Table.from(List)` |
-| `TableBuilder<T>` | Fluent builder: `name()`, `column()`, `group()`, `collapsible()`, `autoColumns()`, `build()` |
+| `Table<T>` | Контейнер с колонками и строками, точка входа: `Table.from(List)` |
+| `TableBuilder<T>` | Fluent builder: `name()`, `column()`, `group()`, `collapsible()`, `build()` |
 | `DataColumn<T>` | Колонка с данными: title, value getter, style |
 | `GroupColumn<T>` | Группа колонок с вложенными дочерними колонками |
 | `CollapsibleColumn<T>` | Сворачиваемая группа колонок |
@@ -233,15 +211,6 @@ public Workbook getWorkbook(int rowsCount) {
 ```
 
 Для точных замеров производительности на ваших данных рекомендуется запустить нагрузочное тестирование с типовой структурой колонок и формул.
-
-## Пример из реального проекта
-
-В тестовом примере [`FactorExample.java`](lib/src/test/java/io/github/a_azashikov/tablekit/factor/FactorExample.java) демонстрируется построение отчёта с:
-
-- Динамическим списком технических мест (TP)
-- Иерархическими периодами (год → месяц → день)
-- Формулами, ссылающимися на значения факторов
-- Вложенными группами колонок
 
 ## Разработка
 
