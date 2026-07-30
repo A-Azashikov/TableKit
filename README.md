@@ -33,6 +33,7 @@
 | **Excel (XLSX)** | Рендеринг в формат OOXML через Apache POI |
 | **Streaming для больших данных** | Авто-выбор SXSSFWorkbook при > 1000 строк |
 | **Несколько таблиц** | Возможность добавить несколько таблиц в один workbook |
+| **Auto-columns** | Авто-генерация колонок из полей record-класса через аннотацию `@Name` |
 
 ## Установка
 
@@ -125,9 +126,26 @@ var table = Table.from(rows)
 | Формула | Описание |
 |---|---|
 | `ref("ColumnName")` | Ссылка на значение в другой колонке текущей строки |
-| `val("string")` | Литеральное строковое значение |
+| `ref("ColumnName", "RowKey")` | Ссылка на ячейку по ключам колонки и строки |
+| `ref("ColumnName", "RowKey", "TableName")` | Кросс-табличная ссылка на ячейку |
+| `val(value)` | Литеральное значение любого типа (String, Number и т.д.) |
 | `add(left, right)`, `sub(left, right)`, `mul(left, right)`, `div(left, right)` | Арифметические операции |
 | `iff(condition, thenVal, elseVal)` | Условное вычисление |
+
+Также можно задать формулу напрямую через `Formula`:
+
+```java
+var table = Table.from(rows)
+    .name("Сводка")
+    .column("Доход",   c -> c.title("Доход").number(Row::income))
+    .column("Расход",  c -> c.title("Расход").number(Row::expense))
+    .column("Прибыль", c -> c.title("Прибыль")
+        .formula(f.sub(f.ref("Доход"), f.ref("Расход")))
+    )
+    .build();
+```
+
+Ссылки на ячейки в формулах автоматически резолвятся в реальные Excel-координаты (например, `B2`, `C3`) при рендеринге.
 
 ### 4. Кастомные стили
 
@@ -148,6 +166,44 @@ var table = Table.from(rows)
     .column(c -> c.title("Value").number(Row::value).style(headerStyle))
     .build();
 ```
+
+### 5. Авто-колонки
+
+```java
+// Класс-строка данных с аннотацией @Name для заголовков
+public record Row(
+    @Name("Name") String name,
+    @Name("Date") LocalDate date,
+    @Name("Value") double value
+) {}
+
+// Вариант 1: через Table.of(Class) — без данных, только структура
+var table = Table.of(Row.class)
+    .name("Auto Report")
+    .autoColumns()
+    .build();
+
+// Вариант 2: через Table.from(rows) с авто-колонками
+var rows = List.of(
+    new Row("Alpha", LocalDate.of(2024, 1, 1), 100.0),
+    new Row("Beta",  LocalDate.of(2024, 2, 1), 200.0)
+);
+
+var table = Table.from(rows)
+    .name("Auto Report")
+    .autoColumns()
+    .build();
+
+// Выгрузка в Excel
+var workbook = new POIWorkbook();
+workbook.add(table);
+
+try (var out = new FileOutputStream("report.xlsx")) {
+    workbook.render(out);
+}
+```
+
+Метод `autoColumns()` сканирует поля record-класса через рефлексию, находит поля с аннотацией `@Name` и автоматически создаёт колонки с соответствующими заголовками и типами.
 
 ## Архитектура
 
