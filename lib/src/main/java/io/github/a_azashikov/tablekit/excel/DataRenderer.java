@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 
 import io.github.a_azashikov.tablekit.core.Table;
 import io.github.a_azashikov.tablekit.core.column.Column;
+import io.github.a_azashikov.tablekit.core.column.collapsible.CollapsibleColumn;
 import io.github.a_azashikov.tablekit.core.column.data.DataColumn;
 import io.github.a_azashikov.tablekit.core.column.data.value.DateValue;
 import io.github.a_azashikov.tablekit.core.column.data.value.NumericValue;
@@ -92,6 +93,8 @@ class DataRenderer {
                 result.add((DataColumn<T>) column);
             } else if (column instanceof GroupColumn<T>) {
                 flatColumns(((GroupColumn<T>) column).getChildren(), result);
+            } else if (column instanceof CollapsibleColumn<T>) {
+                flatColumns(((CollapsibleColumn<T>) column).getChildren(), result);
             }
         }
     }

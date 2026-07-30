@@ -1,9 +1,16 @@
 package io.github.a_azashikov.tablekit.core.column.configurations;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import io.github.a_azashikov.tablekit.core.style.Alignment;
 import io.github.a_azashikov.tablekit.core.style.Border;
 import io.github.a_azashikov.tablekit.core.style.Fill;
 
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface HeadStyle {
     String fontName() default "Arial";
     short fontSize() default 11;
