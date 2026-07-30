@@ -1,5 +1,6 @@
 package io.github.a_azashikov.tablekit.core.column.data;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import io.github.a_azashikov.tablekit.core.column.Column;
@@ -10,9 +11,9 @@ public class DataColumn<T> implements Column<T> {
     private String title = "";
     private String key = "";
     private Function<T, Value> valueGetter = r -> null;
-    private Function<T, CellStyleDefinition> styleGetter = r -> null;
+    private BiFunction<T, Integer, CellStyleDefinition> styleGetter = (r, i) -> null;
     private CellStyleDefinition headerStyle = null;
-    private int size = 1;
+    private Integer size = null;
 
     @Override
     public String getTitle() {
@@ -23,8 +24,8 @@ public class DataColumn<T> implements Column<T> {
         return valueGetter.apply(row);
     }
 
-    public CellStyleDefinition getCellStyle(T row) {
-        return styleGetter.apply(row);
+    public CellStyleDefinition getCellStyle(T row, Integer index) {
+        return styleGetter.apply(row, index);
     }
 
     @Override
@@ -37,9 +38,10 @@ public class DataColumn<T> implements Column<T> {
         return 1;
     }
 
-    public int getSize() {
+    public Integer getSize() {
         return size;
     }
+    
     public String getKey() {
         return key;
     }
@@ -58,6 +60,14 @@ public class DataColumn<T> implements Column<T> {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public void setStyleGetter(BiFunction<T, Integer, CellStyleDefinition> styleGetter) {
+        this.styleGetter = styleGetter;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
     }
 
 }

@@ -35,8 +35,20 @@ public class CustomizeDataContext<T> {
         return this;
     }
     
+    public CustomizeDataContext<T> size(Integer size) {
+        this.column.setSize(size);
+
+        return this;
+    }
+    
     public CustomizeDataContext<T> style(CellStyleDefinition headerStyle) {
         this.column.setHeaderStyle(headerStyle);
+
+        return this;
+    }
+    
+    public CustomizeDataContext<T> cellStyle(BiFunction<T, Integer, CellStyleDefinition> cellStyleGetter) {
+        this.column.setStyleGetter(cellStyleGetter);
 
         return this;
     }

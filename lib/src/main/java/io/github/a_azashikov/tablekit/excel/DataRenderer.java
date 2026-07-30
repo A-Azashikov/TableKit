@@ -30,23 +30,25 @@ class DataRenderer {
         List<DataColumn<T>> columns = new ArrayList<>();
         flatColumns(table.getColumns(), columns);
 
-        for (var tableRow : table.getRows()) {
-            var row = sheet.createRow(sheet.getLastRowNum() + 1);
-
-            for (int i = 0; i < columns.size(); i++) {
-                DataColumn<T> dataColumn = columns.get(i);
-                var cell = row.createCell(i);
+        var firstRowIndex = sheet.getLastRowNum() + 1;
+        for (int i = 0; i < table.getRows().size(); i++) {
+            var tableRow = table.getRows().get(i);
+            var row = sheet.createRow(firstRowIndex + i);
+            
+            for (int j = 0; j < columns.size(); j++) {
+                DataColumn<T> dataColumn = columns.get(j);
+                var cell = row.createCell(j);
                 var value = dataColumn.getValue(tableRow);
                 setValue(cell, value);
-                setStyle(tableRow, dataColumn, cell);
+                setStyle(tableRow, dataColumn, cell, i);
             }
         }
     }
 
-    private <T> void setStyle(T tableRow, DataColumn<T> dataColumn, Cell cell) {
+    private <T> void setStyle(T tableRow, DataColumn<T> dataColumn, Cell cell, Integer rowIndex) {
         cell.setCellStyle(
             cellStyleCache.getOrCreateCellStyle(
-                dataColumn.getCellStyle(tableRow)
+                dataColumn.getCellStyle(tableRow, rowIndex)
             )
         );
     }

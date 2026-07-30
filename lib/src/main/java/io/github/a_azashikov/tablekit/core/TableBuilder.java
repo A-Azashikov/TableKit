@@ -10,6 +10,7 @@ import io.github.a_azashikov.tablekit.core.column.Column;
 
 public final class TableBuilder<T> extends ChildrenContextBase<T, TableBuilder<T>> {
     private String name = "";
+    private Integer defaultColumnSize = null;
     private Function<T, String> rowKeyGetter = row -> row.toString();
     private final List<Column<T>> columns = new ArrayList<>();
     private final List<T> rows = new ArrayList<>();
@@ -21,6 +22,12 @@ public final class TableBuilder<T> extends ChildrenContextBase<T, TableBuilder<T
 
     public TableBuilder<T> name(String name) {
         this.name = name;
+
+        return this;
+    }
+
+    public TableBuilder<T> defaultColumnSize(Integer size) {
+        this.defaultColumnSize = size;
 
         return this;
     }
@@ -50,7 +57,7 @@ public final class TableBuilder<T> extends ChildrenContextBase<T, TableBuilder<T
     // }
 
     public Table<T> build() {
-        Table<T> table = new Table<>(name, rowKeyGetter);
+        Table<T> table = new Table<>(name, rowKeyGetter, defaultColumnSize);
 
         for (Column<T> column : columns) {
             table.addColumn(column);

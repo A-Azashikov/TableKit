@@ -25,6 +25,10 @@ class HeaderRenderer {
         var rowIndex = 0;
         var maxDepth = getMaxDepth(table.getColumns(), 0);
 
+        if (table.getDefaultColumnSize() != null) {
+            sheet.setDefaultColumnWidth(maxDepth);
+        }
+
         for (var column : table.getColumns()) {
             renderColumn(sheet, column, rowIndex, colIndex, maxDepth);
             colIndex += column.getWidth();
@@ -89,7 +93,9 @@ class HeaderRenderer {
                 column.getHeaderStyle()
             )
         );
-        sheet.setColumnWidth(colIndex, column.getSize()*256);
+        if (column.getSize() != null) {
+            sheet.setColumnWidth(colIndex, column.getSize()*256);
+        }
     }
 
     private Row getOrCreateRow(Sheet sheet, int rowIndex) {

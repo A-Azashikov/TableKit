@@ -10,11 +10,17 @@ public class Table<T> {
     private final List<Column<T>> columns = new ArrayList<>();
     private final List<T> rows = new ArrayList<>();
     private final String name;
+    private final Integer defaultColumnSize;
     private final Function<T, String> rowKeyGetter;
 
     public Table(String name, Function<T, String> rowKeyGetter) {
+        this(name, rowKeyGetter, null);
+    }
+
+    public Table(String name, Function<T, String> rowKeyGetter, Integer defaultColumnSize) {
         this.name = name;
         this.rowKeyGetter = rowKeyGetter;
+        this.defaultColumnSize = defaultColumnSize;
     }
 
     public String getName() {
@@ -39,6 +45,10 @@ public class Table<T> {
 
     public Function<T, String> getRowKeyGetter() {
         return rowKeyGetter;
+    }
+
+    public Integer getDefaultColumnSize() {
+        return defaultColumnSize;
     }
 
     // public static <T> TableBuilder<T> of(Class<T> row) {
