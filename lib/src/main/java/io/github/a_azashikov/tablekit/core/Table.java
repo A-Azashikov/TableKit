@@ -51,17 +51,16 @@ public class Table<T> {
         return defaultColumnSize;
     }
 
-    // public static <T> TableBuilder<T> of(Class<T> row) {
-    //     var builder = new TableBuilder<T>(row);
+    public static <T> TableBuilder<T> of(Class<T> row) {
+        var builder = new TableBuilder<T>(row);
 
-    //     return builder;
-    // }
+        return builder;
+    }
 
-    // @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public static <T> TableBuilder<T> from(List<T> rows) {
-        // var row = rows.getFirst();
-        // var builder = new TableBuilder<T>((Class<T>) row.getClass());
-        var builder = new TableBuilder<T>();
+        var row = rows.getFirst();
+        var builder = new TableBuilder<T>((Class<T>) row.getClass());
 
         builder.addRows(rows);
 

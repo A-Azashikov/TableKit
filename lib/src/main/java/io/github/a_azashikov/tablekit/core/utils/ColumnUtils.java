@@ -12,12 +12,17 @@ import io.github.a_azashikov.tablekit.core.column.data.value.Value;
 public class ColumnUtils {
     public static <T> Stream<Column<T>> generateColumns(Class<T> classz) {
         Stream.Builder<Column<T>> columnsStreamBuilder = Stream.<Column<T>>builder();
-        var fields = classz.getFields();
+        
+        var declaredFields = classz.getDeclaredFields();
 
-        for (Field field : fields) {
+        for (Field field : declaredFields) {
             var columnAnnotation = field.getAnnotation(Name.class);
 
             if (columnAnnotation == null) {
+                continue;
+            }
+
+            if (!field.trySetAccessible()) {
                 continue;
             }
 
