@@ -2,6 +2,8 @@ package io.github.a_azashikov.tablekit.excel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import org.apache.poi.ss.util.CellReference;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -20,6 +22,7 @@ import io.github.a_azashikov.tablekit.core.style.CellStyleCache;
 
 class DataRenderer {
     private CellStyleCache cellStyleCache;
+    private Map<CellIndex, String> cellReferenceMap;
     private FormulaAstExcelVisitor formulaAstExcelVisitor;
 
     public DataRenderer(CellStyleCache cellStyleCache) {
@@ -30,6 +33,8 @@ class DataRenderer {
     public <T> void render(Sheet sheet, Table<T> table) {
         List<DataColumn<T>> columns = new ArrayList<>();
         flatColumns(table.getColumns(), columns);
+
+        fillCellReferences(table, columns);
 
         var firstRowIndex = sheet.getLastRowNum() + 1;
         for (int i = 0; i < table.getRows().size(); i++) {
@@ -42,6 +47,19 @@ class DataRenderer {
                 var value = dataColumn.getValue(tableRow);
                 setValue(cell, value);
                 setStyle(tableRow, dataColumn, cell, i);
+            }
+        }
+    }
+
+    private <T> void fillCellReferences(Table<T> table, List<DataColumn<T>> columns) {
+        for (int i = 0; i < table.getRows().size(); i++) {
+            var row = table.getRows().get(i);
+            for (int j = 0; j < columns.size(); j++) {
+                var column = columns.get(j);
+                cellReferenceMap.put(
+                    new CellIndex(column.getKey(), table.getRowKeyGetter().apply(row)),
+                    table.getName() + "!" + CellReference.convertNumToColString(j) + i
+                );
             }
         }
     }

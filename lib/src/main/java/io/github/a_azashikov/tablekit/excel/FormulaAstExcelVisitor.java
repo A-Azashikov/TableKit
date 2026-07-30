@@ -2,6 +2,7 @@ package io.github.a_azashikov.tablekit.excel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.aggregations.*;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.binary.*;
@@ -10,6 +11,7 @@ import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.visitor.FormulaBaseVisitor;
 
 public class FormulaAstExcelVisitor implements FormulaBaseVisitor<String> {
+    private Map<CellIndex, String> cellReferenceMap;
 
     @Override
     public String visit(UnaryOperation operation) {
@@ -99,7 +101,12 @@ public class FormulaAstExcelVisitor implements FormulaBaseVisitor<String> {
     }
 
     public String visit(CellReference reference) {
-        return "TODO: Add get cell by keys";
+        return cellReferenceMap.get(
+            new CellIndex(
+                reference.getColumnKey(),
+                reference.getRowKey()
+            )
+        );
     }
 
 }

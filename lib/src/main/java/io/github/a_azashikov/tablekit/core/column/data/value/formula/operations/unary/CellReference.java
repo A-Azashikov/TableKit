@@ -5,12 +5,14 @@ import io.github.a_azashikov.tablekit.core.column.data.value.formula.visitor.For
 public class CellReference extends UnaryOperation {
     private final String columnKey;
     private final String rowKey;
+    private final String tableName;
     
-    public CellReference(String columnKey, String rowKey) {
+    public CellReference(String columnKey, String rowKey, String tableName) {
         super(null);
 
         this.columnKey = columnKey;
         this.rowKey = rowKey;
+        this.tableName = tableName;
     }
     
     @Override
@@ -24,6 +26,10 @@ public class CellReference extends UnaryOperation {
 
     public String getRowKey() {
         return rowKey;
+    }
+
+    public String getTableName() {
+        return tableName;
     }
 
 }

@@ -6,8 +6,8 @@ import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.ternary.*;
 
 public class FormulaContext {
-    public Formula val(String value) {
-        return new Val<>(value);
+    public <V> Formula val(V value) {
+        return new Val<V>(value);
     }
     
     public CellReference ref(String columnKey) {
@@ -15,7 +15,11 @@ public class FormulaContext {
     }
     
     public CellReference ref(String columnKey, String rowKey) {
-        return new CellReference(columnKey, rowKey);
+        return ref(columnKey, rowKey, null);
+    }
+    
+    public CellReference ref(String columnKey, String rowKey, String tableName) {
+        return new CellReference(columnKey, rowKey, tableName);
     }
     
     // Binary operations

@@ -84,4 +84,12 @@ public class CustomizeDataContext<T> {
 
         return this;
     }
+    
+    public CustomizeDataContext<T> formula(Formula formula) {
+        this.column.setValueGetter(
+            r -> new FormulaValue(formula)
+        );
+
+        return this;
+    }
 }
