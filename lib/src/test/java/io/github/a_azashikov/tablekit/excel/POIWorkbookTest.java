@@ -12,14 +12,14 @@ class POIWorkbookTest {
     @Test
     void shouldAddTable_whenAddCalled() {
         var workbook = new POIWorkbook();
-        var table = new TableBuilder<String>().name("Test").build();
+        var table = new TableBuilder<>(String.class).name("Test").build();
         workbook.add(table);
     }
 
     @Test
     void shouldRenderWithoutError_whenRenderCalled() throws Exception {
         var workbook = new POIWorkbook();
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .name("Test")
             .column("Name", row -> row)
             .addRow("John")

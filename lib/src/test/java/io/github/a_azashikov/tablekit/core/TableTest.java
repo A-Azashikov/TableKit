@@ -72,4 +72,14 @@ class TableTest {
         assertEquals("row1", table.getRows().get(0));
         assertEquals("row2", table.getRows().get(1));
     }
+
+    @Test
+    void shouldCreateBuilder_whenOfCalled() {
+        var builder = Table.of(String.class);
+        assertNotNull(builder);
+        var table = builder.build();
+        assertEquals("", table.getName());
+        assertTrue(table.getColumns().isEmpty());
+        assertTrue(table.getRows().isEmpty());
+    }
 }

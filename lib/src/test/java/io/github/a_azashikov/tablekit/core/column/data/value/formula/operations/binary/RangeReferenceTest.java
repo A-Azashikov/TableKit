@@ -13,8 +13,8 @@ class RangeReferenceTest {
 
     @Test
     void shouldReturnStartAndEnd_whenConstructedWithCellReferences() {
-        var start = new CellReference("A", "1");
-        var end = new CellReference("A", "10");
+        var start = new CellReference("A", "1", null);
+        var end = new CellReference("A", "10", null);
         var range = new RangeReference(start, end);
         assertEquals(start, range.getLeft());
         assertEquals(end, range.getRight());
@@ -22,7 +22,7 @@ class RangeReferenceTest {
 
     @Test
     void shouldCallVisitorVisit_whenAcceptCalled() {
-        var range = new RangeReference(new CellReference("A", "1"), new CellReference("A", "10"));
+        var range = new RangeReference(new CellReference("A", "1", null), new CellReference("A", "10", null));
         var result = range.accept(new FormulaBaseVisitor<String>() {
             @Override
             public String visit(BinaryOperation operation) { return "visited"; }
@@ -34,5 +34,12 @@ class RangeReferenceTest {
             public String visit(AggregateFunction aggregation) { return null; }
         });
         assertEquals("visited", result);
+    }
+
+    @Test
+    void shouldThrow_whenStartAndEndInDifferentTables() {
+        var start = new CellReference("A", "1", "Table1");
+        var end = new CellReference("A", "10", "Table2");
+        assertThrows(RuntimeException.class, () -> new RangeReference(start, end));
     }
 }

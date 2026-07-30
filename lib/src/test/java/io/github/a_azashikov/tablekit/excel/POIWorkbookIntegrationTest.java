@@ -32,7 +32,7 @@ class POIWorkbookIntegrationTest {
 
     @Test
     void shouldRenderSimpleTableWithStringData() throws Exception {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .name("SimpleTable")
             .column("Name", row -> row)
             .addRow("John")
@@ -56,7 +56,7 @@ class POIWorkbookIntegrationTest {
 
     @Test
     void shouldRenderTableWithNumericData() throws Exception {
-        var table = new TableBuilder<Person>()
+        var table = new TableBuilder<>(Person.class)
             .name("NumericTable")
             .column("Name", row -> row.name)
             .column("Age", row -> row.age)
@@ -84,7 +84,7 @@ class POIWorkbookIntegrationTest {
 
     @Test
     void shouldRenderTableWithGroupedColumns() throws Exception {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .name("GroupedTable")
             .group("Personal", g -> g
                 .column("Name", row -> row)
@@ -118,7 +118,7 @@ class POIWorkbookIntegrationTest {
 
     @Test
     void shouldRenderTableWithCollapsibleColumns() throws Exception {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .name("CollapsibleTable")
             .collapsible(c -> c
                 .column("Hidden1", row -> "val1")
@@ -154,7 +154,7 @@ class POIWorkbookIntegrationTest {
         headerStyle.setAlignment(Alignment.Center);
         headerStyle.setBorder(Border.Thin);
 
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .name("StyledTable")
             .column(ctx -> ctx
                 .title("Name")
@@ -182,13 +182,13 @@ class POIWorkbookIntegrationTest {
 
     @Test
     void shouldRenderMultipleTables() throws Exception {
-        var table1 = new TableBuilder<String>()
+        var table1 = new TableBuilder<>(String.class)
             .name("Table1")
             .column("Col1", row -> row)
             .addRow("A")
             .build();
 
-        var table2 = new TableBuilder<String>()
+        var table2 = new TableBuilder<>(String.class)
             .name("Table2")
             .column("ColA", row -> row)
             .addRow("B")
@@ -211,7 +211,7 @@ class POIWorkbookIntegrationTest {
 
     @Test
     void shouldRenderTableWithFormulaColumn() throws Exception {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .name("FormulaTable")
             .column("Value", row -> 10)
             .column(ctx -> ctx

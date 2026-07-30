@@ -3,6 +3,9 @@ package io.github.a_azashikov.tablekit.core.column.data.value.formula;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.github.a_azashikov.tablekit.excel.FormulaAstExcelVisitor;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.unary.Val;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.unary.CellReference;
@@ -17,10 +20,12 @@ import io.github.a_azashikov.tablekit.core.column.data.value.formula.aggregation
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.aggregations.Count;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.aggregations.Min;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.aggregations.Max;
+import io.github.a_azashikov.tablekit.excel.CellIndex;
 
 class FormulaAstExcelVisitorTest {
 
-    private final FormulaAstExcelVisitor visitor = new FormulaAstExcelVisitor();
+    private final Map<CellIndex, String> cellReferenceMap = new HashMap<>();
+    private final FormulaAstExcelVisitor visitor = new FormulaAstExcelVisitor(cellReferenceMap);
 
     @Test
     void shouldConvertValToString() {
@@ -54,8 +59,22 @@ class FormulaAstExcelVisitorTest {
 
     @Test
     void shouldConvertRangeReferenceToString() {
-        var formula = new RangeReference(new CellReference("A", "1"), new CellReference("A", "10"));
-        assertEquals("TODO: Add get cell by keys:TODO: Add get cell by keys", formula.accept(visitor));
+        var start = new CellReference("A", "1", null);
+        var end = new CellReference("A", "10", null);
+        var formula = new RangeReference(
+            start,
+            end
+        );
+        cellReferenceMap.put(
+            new CellIndex(start.getColumnKey(), start.getRowKey()),
+            "A1"
+        );
+        cellReferenceMap.put(
+            new CellIndex(end.getColumnKey(), end.getRowKey()),
+            "A10"
+        );
+        // No cells available in the map, so references resolve to null
+        assertEquals("A1:A10", formula.accept(visitor));
     }
 
     @Test

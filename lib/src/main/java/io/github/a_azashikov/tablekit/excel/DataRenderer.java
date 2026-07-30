@@ -1,6 +1,7 @@
 package io.github.a_azashikov.tablekit.excel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.poi.ss.util.CellReference;
@@ -27,7 +28,8 @@ class DataRenderer {
 
     public DataRenderer(CellStyleCache cellStyleCache) {
         this.cellStyleCache = cellStyleCache;
-        this.formulaAstExcelVisitor = new FormulaAstExcelVisitor();
+        this.cellReferenceMap = new HashMap<>();
+        this.formulaAstExcelVisitor = new FormulaAstExcelVisitor(this.cellReferenceMap);
     }
 
     public <T> void render(Sheet sheet, Table<T> table) {

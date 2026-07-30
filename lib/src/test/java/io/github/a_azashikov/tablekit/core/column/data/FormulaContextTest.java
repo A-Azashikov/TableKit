@@ -18,25 +18,48 @@ class FormulaContextTest {
 
     @Test
     void shouldCreateVal_whenValCalled() {
-        var result = ctx.val("test");
+        var result = (Val<?>) ctx.val("test");
         assertInstanceOf(Val.class, result);
-        assertEquals("test", ((Val<?>) result).getValue());
+        assertEquals("test", result.getValue());
     }
 
     @Test
     void shouldCreateCellReference_whenRefCalledWithColumnKey() {
         var result = ctx.ref("col1");
         assertInstanceOf(CellReference.class, result);
-        assertEquals("col1", ((CellReference) result).getColumnKey());
-        assertNull(((CellReference) result).getRowKey());
+        assertEquals("col1", result.getColumnKey());
+        assertNull(result.getRowKey());
     }
 
     @Test
     void shouldCreateCellReference_whenRefCalledWithColumnAndRowKey() {
         var result = ctx.ref("col1", "row1");
         assertInstanceOf(CellReference.class, result);
-        assertEquals("col1", ((CellReference) result).getColumnKey());
-        assertEquals("row1", ((CellReference) result).getRowKey());
+        assertEquals("col1", result.getColumnKey());
+        assertEquals("row1", result.getRowKey());
+    }
+
+    @Test
+    void shouldCreateCellReferenceWithTableName_whenRefCalledWithColumnRowAndTable() {
+        var result = ctx.ref("col1", "row1", "Table1");
+        assertInstanceOf(CellReference.class, result);
+        assertEquals("col1", result.getColumnKey());
+        assertEquals("row1", result.getRowKey());
+        assertEquals("Table1", result.getTableName());
+    }
+
+    @Test
+    void shouldCreateValWithNonStringType_whenValCalledWithNumber() {
+        var result = (Val<?>) ctx.val(42);
+        assertInstanceOf(Val.class, result);
+        assertEquals(42, result.getValue());
+    }
+
+    @Test
+    void shouldCreateValWithBoolean_whenValCalledWithBoolean() {
+        var result = (Val<?>) ctx.val(true);
+        assertInstanceOf(Val.class, result);
+        assertEquals(true, result.getValue());
     }
 
     @Test
@@ -67,7 +90,7 @@ class FormulaContextTest {
     void shouldCreateRangeReference_whenRangeCalled() {
         var start = ctx.ref("A", "1");
         var end = ctx.ref("A", "10");
-        var result = ctx.range((CellReference) start, (CellReference) end);
+        var result = ctx.range(start, end);
         assertInstanceOf(RangeReference.class, result);
     }
 

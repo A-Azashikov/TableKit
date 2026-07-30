@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Date;
 import java.util.function.Function;
 
+import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.unary.Val;
 import io.github.a_azashikov.tablekit.core.column.data.value.StringValue;
 import io.github.a_azashikov.tablekit.core.column.data.value.NumericValue;
 import io.github.a_azashikov.tablekit.core.column.data.value.DateValue;
@@ -103,6 +104,16 @@ class CustomizeDataContextTest {
         var column = new DataColumn<String>();
         var ctx = new CustomizeDataContext<>(column);
         ctx.formula((fc, row) -> fc.val(row));
+        var value = column.getValue("test");
+        assertInstanceOf(FormulaValue.class, value);
+    }
+
+    @Test
+    void shouldSetFormulaValueGetter_whenFormulaCalledWithDirectFormula() {
+        var column = new DataColumn<String>();
+        var ctx = new CustomizeDataContext<>(column);
+        var formula = new Val<>("test");
+        ctx.formula(formula);
         var value = column.getValue("test");
         assertInstanceOf(FormulaValue.class, value);
     }

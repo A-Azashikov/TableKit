@@ -5,13 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import io.github.a_azashikov.tablekit.core.column.configurations.Name;
 import io.github.a_azashikov.tablekit.core.column.data.DataColumn;
 
 class TableBuilderTest {
 
     @Test
     void shouldBuildTableWithDefaultValues() {
-        var table = new TableBuilder<String>().build();
+        var table = new TableBuilder<>(String.class).build();
         assertEquals("", table.getName());
         assertTrue(table.getColumns().isEmpty());
         assertTrue(table.getRows().isEmpty());
@@ -19,7 +20,7 @@ class TableBuilderTest {
 
     @Test
     void shouldSetName_whenNameCalled() {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .name("TestTable")
             .build();
         assertEquals("TestTable", table.getName());
@@ -27,7 +28,7 @@ class TableBuilderTest {
 
     @Test
     void shouldSetDefaultColumnSize_whenDefaultColumnSizeCalled() {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .defaultColumnSize(100)
             .build();
         assertEquals(100, table.getDefaultColumnSize());
@@ -35,7 +36,7 @@ class TableBuilderTest {
 
     @Test
     void shouldSetRowKey_whenRowKeyCalled() {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .rowKey(row -> "key:" + row)
             .build();
         assertEquals("key:test", table.getRowKeyGetter().apply("test"));
@@ -43,7 +44,7 @@ class TableBuilderTest {
 
     @Test
     void shouldAddRow_whenAddRowCalled() {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .addRow("row1")
             .addRow("row2")
             .build();
@@ -54,7 +55,7 @@ class TableBuilderTest {
 
     @Test
     void shouldAddRows_whenAddRowsCalled() {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .addRows(List.of("row1", "row2"))
             .build();
         assertEquals(2, table.getRows().size());
@@ -62,7 +63,7 @@ class TableBuilderTest {
 
     @Test
     void shouldAddColumn_whenColumnCalled() {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .column(ctx -> ctx.title("Name").value(row -> row))
             .build();
         assertEquals(1, table.getColumns().size());
@@ -71,7 +72,7 @@ class TableBuilderTest {
 
     @Test
     void shouldAddColumnWithTitleAndValue_whenColumnShortcutCalled() {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .column("Name", row -> row)
             .build();
         assertEquals(1, table.getColumns().size());
@@ -80,7 +81,7 @@ class TableBuilderTest {
 
     @Test
     void shouldAddGroup_whenGroupCalled() {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .group("Group1", g -> g
                 .column("Name", row -> row)
             )
@@ -91,7 +92,7 @@ class TableBuilderTest {
 
     @Test
     void shouldAddCollapsible_whenCollapsibleCalled() {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .collapsible(c -> c
                 .column("Name", row -> row)
             )
@@ -101,9 +102,21 @@ class TableBuilderTest {
 
     @Test
     void shouldAddChild_whenAddChildCalled() {
-        var table = new TableBuilder<String>()
+        var table = new TableBuilder<>(String.class)
             .addChild(new DataColumn<>())
             .build();
         assertEquals(1, table.getColumns().size());
+    }
+
+    record TestRow(@Name("Name") String name, @Name("Age") int age) {}
+
+    @Test
+    void shouldAutoGenerateColumns_whenAutoColumnsCalled() {
+        var table = new TableBuilder<TestRow>(TestRow.class)
+            .autoColumns()
+            .build();
+        assertEquals(2, table.getColumns().size());
+        assertEquals("Name", table.getColumns().get(0).getTitle());
+        assertEquals("Age", table.getColumns().get(1).getTitle());
     }
 }

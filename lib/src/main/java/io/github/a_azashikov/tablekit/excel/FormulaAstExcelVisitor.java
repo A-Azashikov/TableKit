@@ -11,7 +11,11 @@ import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.visitor.FormulaBaseVisitor;
 
 public class FormulaAstExcelVisitor implements FormulaBaseVisitor<String> {
-    private Map<CellIndex, String> cellReferenceMap;
+    private final Map<CellIndex, String> cellReferenceMap;
+
+    public FormulaAstExcelVisitor(Map<CellIndex, String> cellReferenceMap) {
+        this.cellReferenceMap = cellReferenceMap;
+    }
 
     @Override
     public String visit(UnaryOperation operation) {
