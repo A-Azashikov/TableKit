@@ -59,6 +59,10 @@ class DataRenderer {
             for (int j = 0; j < columns.size(); j++) {
                 var column = columns.get(j);
                 cellReferenceMap.put(
+                    new CellIndex(column.getKey(), null),
+                    String.format("'%s'!%s%s", table.getName(), CellReference.convertNumToColString(j), j + 1)
+                );
+                cellReferenceMap.put(
                     new CellIndex(column.getKey(), table.getRowKeyGetter().apply(row)),
                     String.format("'%s'!%s%s", table.getName(), CellReference.convertNumToColString(j), j + 1)
                 );

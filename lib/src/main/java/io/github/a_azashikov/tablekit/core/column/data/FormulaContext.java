@@ -1,6 +1,9 @@
 package io.github.a_azashikov.tablekit.core.column.data;
 
+import java.util.Collection;
+
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.Formula;
+import io.github.a_azashikov.tablekit.core.column.data.value.formula.aggregations.*;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.unary.*;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.binary.*;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.ternary.*;
