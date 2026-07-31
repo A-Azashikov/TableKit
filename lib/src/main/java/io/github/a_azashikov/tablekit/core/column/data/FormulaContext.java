@@ -48,4 +48,45 @@ public class FormulaContext {
         return new If(left, middle, right);
     }
 
+    // Aggregations
+    public Formula avg(Formula ...arguments) {
+        return new Avg(arguments);
+    }
+    
+    public Formula avg(Collection<Formula> arguments) {
+        return new Avg(arguments);
+    }
+
+    public Formula count(Formula ...arguments) {
+        return new Count(arguments);
+    }
+    
+    public Formula count(Collection<Formula> arguments) {
+        return new Count(arguments);
+    }
+
+    public Formula max(Formula ...arguments) {
+        return new Max(arguments);
+    }
+    
+    public Formula max(Collection<Formula> arguments) {
+        return new Max(arguments);
+    }
+
+    public Formula min(Formula ...arguments) {
+        return new Min(arguments);
+    }
+    
+    public Formula min(Collection<Formula> arguments) {
+        return new Min(arguments);
+    }
+
+    public Formula sum(Formula ...arguments) {
+        return new Sum(arguments);
+    }
+    
+    public Formula sum(Collection<Formula> arguments) {
+        return new Sum(arguments);
+    }
+
 }

@@ -60,7 +60,7 @@ class DataRenderer {
                 var column = columns.get(j);
                 cellReferenceMap.put(
                     new CellIndex(column.getKey(), table.getRowKeyGetter().apply(row)),
-                    table.getName() + "!" + CellReference.convertNumToColString(j) + i
+                    String.format("'%s'!%s%s", table.getName(), CellReference.convertNumToColString(j), j + 1)
                 );
             }
         }
@@ -102,9 +102,11 @@ class DataRenderer {
     }
 
     private void setValue(Cell cell, FormulaValue value) {
-        cell.setCellValue(
-            value.getFormula().accept(formulaAstExcelVisitor)
-        );
+        var formula = value.getFormula().accept(formulaAstExcelVisitor);
+        if (formula == null) {
+            return;
+        }
+        cell.setCellFormula(formula);
     }
 
     private <T> void flatColumns(List<Column<T>> columns, List<DataColumn<T>> result) {

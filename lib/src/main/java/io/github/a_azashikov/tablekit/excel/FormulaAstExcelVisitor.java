@@ -43,7 +43,15 @@ public class FormulaAstExcelVisitor implements FormulaBaseVisitor<String> {
             return operation.getLeft().accept(this) + "*" + operation.getRight().accept(this);
         }
         if (operation instanceof RangeReference) {
-            return operation.getLeft().accept(this) + ":" + operation.getRight().accept(this);
+            var start = operation.getLeft().accept(this);
+            if (start == null) {
+                return null;
+            }
+            var end = operation.getRight().accept(this);
+            if (end == null) {
+                return null;
+            }
+            return start + ":" + end;
         }
         return "";
     }
@@ -65,7 +73,11 @@ public class FormulaAstExcelVisitor implements FormulaBaseVisitor<String> {
     public String visit(AggregateFunction aggregation) {
         List<String> parameters = new ArrayList<>();
         for (var argument : aggregation.getArguments()) {
-            parameters.add(argument.accept(this));
+            var parameter = argument.accept(this);
+            if (parameter == null) {
+                continue;
+            }
+            parameters.add(parameter);
         }
         if (aggregation instanceof Avg) {
             return String.format(
