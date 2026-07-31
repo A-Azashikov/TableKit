@@ -16,6 +16,11 @@ application {
     mainClass = "io.github.a_azashikov.tablekit.example.simple.SimpleExample"
 }
 
+tasks.register<JavaExec>("runGroupExample") {
+    mainClass = "io.github.a_azashikov.tablekit.example.group.GroupExample"
+    classpath = sourceSets.main.get().runtimeClasspath
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
