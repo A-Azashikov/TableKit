@@ -3,18 +3,25 @@ package io.github.a_azashikov.tablekit.excel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
 
+import io.github.a_azashikov.tablekit.core.Table;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.aggregations.*;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.binary.*;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.ternary.*;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.unary.*;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.visitor.FormulaBaseVisitor;
 
-public class FormulaAstExcelVisitor implements FormulaBaseVisitor<String> {
+public class FormulaAstExcelVisitor<T> implements FormulaBaseVisitor<String> {
     private final Map<CellIndex, String> cellReferenceMap;
+    private final Supplier<T> currentRowGetter;
+    private final Table<T> table;
 
-    public FormulaAstExcelVisitor(Map<CellIndex, String> cellReferenceMap) {
+    public FormulaAstExcelVisitor(Map<CellIndex, String> cellReferenceMap, Supplier<T> currentRowGetter, Table<T> table) {
         this.cellReferenceMap = cellReferenceMap;
+        this.currentRowGetter = currentRowGetter;
+        this.table = table;
     }
 
     @Override
@@ -120,7 +127,7 @@ public class FormulaAstExcelVisitor implements FormulaBaseVisitor<String> {
         return cellReferenceMap.get(
             new CellIndex(
                 reference.getColumnKey(),
-                reference.getRowKey()
+                Optional.ofNullable(reference.getRowKey()).orElse(table.getRowKeyGetter().apply(currentRowGetter.get()))
             )
         );
     }

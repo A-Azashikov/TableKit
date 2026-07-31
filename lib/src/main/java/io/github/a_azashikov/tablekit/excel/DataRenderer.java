@@ -24,47 +24,42 @@ import io.github.a_azashikov.tablekit.core.style.CellStyleCache;
 class DataRenderer {
     private CellStyleCache cellStyleCache;
     private Map<CellIndex, String> cellReferenceMap;
-    private FormulaAstExcelVisitor formulaAstExcelVisitor;
 
     public DataRenderer(CellStyleCache cellStyleCache) {
         this.cellStyleCache = cellStyleCache;
         this.cellReferenceMap = new HashMap<>();
-        this.formulaAstExcelVisitor = new FormulaAstExcelVisitor(this.cellReferenceMap);
     }
 
     public <T> void render(Sheet sheet, Table<T> table) {
         List<DataColumn<T>> columns = new ArrayList<>();
         flatColumns(table.getColumns(), columns);
 
-        fillCellReferences(table, columns);
-
         var firstRowIndex = sheet.getLastRowNum() + 1;
+        fillCellReferences(table, columns, firstRowIndex);
+
         for (int i = 0; i < table.getRows().size(); i++) {
             var tableRow = table.getRows().get(i);
             var row = sheet.createRow(firstRowIndex + i);
+            var formulaAstExcelVisitor = new FormulaAstExcelVisitor<>(this.cellReferenceMap, () -> tableRow, table);
             
             for (int j = 0; j < columns.size(); j++) {
                 DataColumn<T> dataColumn = columns.get(j);
                 var cell = row.createCell(j);
                 var value = dataColumn.getValue(tableRow);
-                setValue(cell, value);
+                setValue(cell, value, formulaAstExcelVisitor);
                 setStyle(tableRow, dataColumn, cell, i);
             }
         }
     }
 
-    private <T> void fillCellReferences(Table<T> table, List<DataColumn<T>> columns) {
+    private <T> void fillCellReferences(Table<T> table, List<DataColumn<T>> columns, int firstRowIndex) {
         for (int i = 0; i < table.getRows().size(); i++) {
             var row = table.getRows().get(i);
             for (int j = 0; j < columns.size(); j++) {
                 var column = columns.get(j);
                 cellReferenceMap.put(
-                    new CellIndex(column.getKey(), null),
-                    String.format("'%s'!%s%s", table.getName(), CellReference.convertNumToColString(j), j + 1)
-                );
-                cellReferenceMap.put(
                     new CellIndex(column.getKey(), table.getRowKeyGetter().apply(row)),
-                    String.format("'%s'!%s%s", table.getName(), CellReference.convertNumToColString(j), j + 1)
+                    String.format("'%s'!%s%s", table.getName(), CellReference.convertNumToColString(j), firstRowIndex + i + 1)
                 );
             }
         }
@@ -78,7 +73,7 @@ class DataRenderer {
         );
     }
 
-    private void setValue(Cell cell, Value value) {
+    private void setValue(Cell cell, Value value, FormulaAstExcelVisitor<?> visitor) {
         if (value instanceof NumericValue) {
             setValue(cell, (NumericValue) value);
         }
@@ -89,7 +84,7 @@ class DataRenderer {
             setValue(cell, (DateValue) value);
         }
         if (value instanceof FormulaValue) {
-            setValue(cell, (FormulaValue) value);
+            setValue(cell, (FormulaValue) value, visitor);
         }
     }
 
@@ -105,8 +100,8 @@ class DataRenderer {
         cell.setCellValue(value.getValue());
     }
 
-    private void setValue(Cell cell, FormulaValue value) {
-        var formula = value.getFormula().accept(formulaAstExcelVisitor);
+    private void setValue(Cell cell, FormulaValue value, FormulaAstExcelVisitor<?> visitor) {
+        var formula = value.getFormula().accept(visitor);
         if (formula == null) {
             return;
         }

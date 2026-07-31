@@ -11,6 +11,9 @@ import io.github.a_azashikov.tablekit.core.column.data.value.formula.FormulaValu
 
 public class ValueUtils {
     public static Value mapValue(Object v) {
+        if (v == null) {
+            return null;
+        }
         if (v instanceof Value) {
             return (Value) v;
         }

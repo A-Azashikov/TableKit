@@ -56,9 +56,4 @@ class ValueUtilsTest {
         var result = ValueUtils.mapValue(stringValue);
         assertSame(stringValue, result);
     }
-
-    @Test
-    void shouldThrowException_whenInputIsNull() {
-        assertThrows(NullPointerException.class, () -> ValueUtils.mapValue(null));
-    }
 }
