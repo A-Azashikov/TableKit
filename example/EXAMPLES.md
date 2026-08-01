@@ -142,23 +142,25 @@ var table = Table.from(rows)
 LocalDate startDate = LocalDate.of(2026, 1, 1);
 LocalDate endDate = LocalDate.of(2026, 1, 31);
 
-// Строки содержат значение для каждого дня диапазона
-List<Row> rows = generateRows(startDate, endDate);
+// Строки для отрисовки
+List<String> rows = generateRows();
+// Значения для каждого дня диапазона по строкам
+Map<RowDayDataKey, Double> values = generateData(rows, startDate, endDate);
 
-TableBuilder<Row> builder = Table.from(rows)
+TableBuilder<String> builder = Table.from(rows)
     .name("Daily Sales")
-    .column("Name", Row::name);
+    .column("Name", String::valueOf);
 
 // Динамически создаём по одной колонке на каждый день диапазона
 for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
     LocalDate day = date;
     builder.column(
-        day.format(DateTimeFormatter.ofPattern("dd.MM")),
-        row -> row.dailyValues().get(day)
+        day.format(HEADER_FORMAT),
+        row -> values.get(new RowDayDataKey(row, day))
     );
 }
 
-Table<Row> table = builder.build();
+Table<String> table = builder.build();
 ```
 
 **Класс-строка данных** (`Row.java`):

@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -24,22 +24,23 @@ public class DynamicColumnsExample {
         LocalDate endDate = LocalDate.of(2026, 1, 31);
 
         // Generate rows with a value for every day in the requested range
-        List<Row> rows = generateRows(startDate, endDate);
+        List<String> rows = generateRows();
+        Map<RowDayDataKey, Double> values = generateData(rows, startDate, endDate);
 
-        TableBuilder<Row> builder = Table.from(rows)
+        TableBuilder<String> builder = Table.from(rows)
             .name("Daily Sales")
-            .column("Name", Row::name);
+            .column("Name", String::valueOf);
 
         // Dynamically create one column per day between startDate and endDate
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
             LocalDate day = date;
             builder.column(
                 day.format(HEADER_FORMAT),
-                row -> row.dailyValues().get(day)
+                row -> values.get(new RowDayDataKey(row, day))
             );
         }
 
-        Table<Row> table = builder.build();
+        Table<String> table = builder.build();
 
         Path tempFilePath = Files.createTempFile("resultExcel", ".xlsx");
         try (
@@ -54,17 +55,26 @@ public class DynamicColumnsExample {
         System.out.println("Excel file created at: " + tempFilePath);
     }
 
-    private static List<Row> generateRows(LocalDate startDate, LocalDate endDate) {
-        List<Row> rows = new ArrayList<>();
-        ThreadLocalRandom random = ThreadLocalRandom.current();
+    private static List<String> generateRows() {
+        List<String> rows = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
-            Map<LocalDate, Double> dailyValues = new LinkedHashMap<>();
-            for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-                dailyValues.put(date, random.nextDouble(0, 1000));
-            }
-            rows.add(new Row("Product " + i, dailyValues));
+            rows.add("Product " + i);
         }
         return rows;
     }
+
+    private static Map<RowDayDataKey, Double> generateData(List<String> rows, LocalDate startDate, LocalDate endDate) {
+        Map<RowDayDataKey, Double> values = new HashMap<>();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+
+        for (int i = 0; i < rows.size(); i++) {
+            for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+                values.put(new RowDayDataKey(rows.get(i), date), random.nextDouble(0, 1000));
+            }
+        }
+        return values;
+    }
+
+    private static record RowDayDataKey(String row, LocalDate day) {}
 }
