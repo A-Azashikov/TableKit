@@ -163,13 +163,4 @@ for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)
 Table<String> table = builder.build();
 ```
 
-**Класс-строка данных** (`Row.java`):
-
-```java
-public record Row(
-    String name,
-    Map<LocalDate, Double> dailyValues
-) {}
-```
-
-**Результат:** таблица с колонкой `Name` и одной колонкой на каждый день января (01.01, 02.01, ..., 31.01), значения берутся из `dailyValues` каждой строки.
+**Результат:** таблица с колонкой `Name` и одной колонкой на каждый день января (01.01, 02.01, ..., 31.01), значения берутся из `values` каждой строки.
