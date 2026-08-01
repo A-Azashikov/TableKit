@@ -10,6 +10,7 @@ import io.github.a_azashikov.tablekit.core.column.data.DataColumn;
 import io.github.a_azashikov.tablekit.core.column.group.CustomizeGroupContext;
 import io.github.a_azashikov.tablekit.core.column.group.GroupColumn;
 
+@SuppressWarnings("unchecked")
 public abstract class ChildrenContextBase<T, Self extends ChildrenContextBase<T, Self>> {
     public Self column(Consumer<CustomizeDataContext<T>> customizer) {
         var column = new DataColumn<T>();
