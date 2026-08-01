@@ -21,6 +21,11 @@ tasks.register<JavaExec>("runGroupExample") {
     classpath = sourceSets.main.get().runtimeClasspath
 }
 
+tasks.register<JavaExec>("runFormulaExample") {
+    mainClass = "io.github.a_azashikov.tablekit.example.formula.FormulaExample"
+    classpath = sourceSets.main.get().runtimeClasspath
+}
+
 tasks.register<JavaExec>("runDynamicColumnsExample") {
     mainClass = "io.github.a_azashikov.tablekit.example.dynamic.DynamicColumnsExample"
     classpath = sourceSets.main.get().runtimeClasspath
