@@ -40,7 +40,7 @@ class DataRenderer {
         for (int i = 0; i < table.getRows().size(); i++) {
             var tableRow = table.getRows().get(i);
             var row = sheet.createRow(firstRowIndex + i);
-            var formulaAstExcelVisitor = new FormulaAstExcelVisitor<>(this.cellReferenceMap, () -> tableRow, table);
+            var formulaAstExcelVisitor = new FormulaAstExcelVisitor<>(this.cellReferenceMap, tableRow, table);
             
             for (int j = 0; j < columns.size(); j++) {
                 DataColumn<T> dataColumn = columns.get(j);

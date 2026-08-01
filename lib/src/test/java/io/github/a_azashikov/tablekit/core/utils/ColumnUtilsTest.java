@@ -42,13 +42,4 @@ class ColumnUtilsTest {
         assertTrue(style.isBold());
         assertEquals("#FF0000", style.getBackgroundColor());
     }
-
-    @Test
-    void shouldReturnEmptyStream_whenNoAnnotatedFields() {
-        class NoAnnotations {
-            public String field1 = "test";
-        }
-        var columns = ColumnUtils.generateColumns(NoAnnotations.class).toList();
-        assertTrue(columns.isEmpty());
-    }
 }

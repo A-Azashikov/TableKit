@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import io.github.a_azashikov.tablekit.core.Table;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.aggregations.*;
@@ -15,12 +14,12 @@ import io.github.a_azashikov.tablekit.core.column.data.value.formula.visitor.For
 
 public class FormulaAstExcelVisitor<T> implements FormulaBaseVisitor<String> {
     private final Map<CellIndex, String> cellReferenceMap;
-    private final Supplier<T> currentRowGetter;
+    private final T row;
     private final Table<T> table;
 
-    public FormulaAstExcelVisitor(Map<CellIndex, String> cellReferenceMap, Supplier<T> currentRowGetter, Table<T> table) {
+    public FormulaAstExcelVisitor(Map<CellIndex, String> cellReferenceMap, T row, Table<T> table) {
         this.cellReferenceMap = cellReferenceMap;
-        this.currentRowGetter = currentRowGetter;
+        this.row = row;
         this.table = table;
     }
 
@@ -127,7 +126,7 @@ public class FormulaAstExcelVisitor<T> implements FormulaBaseVisitor<String> {
         return cellReferenceMap.get(
             new CellIndex(
                 reference.getColumnKey(),
-                Optional.ofNullable(reference.getRowKey()).orElse(table.getRowKeyGetter().apply(currentRowGetter.get()))
+                Optional.ofNullable(reference.getRowKey()).orElse(table.getRowKeyGetter().apply(row))
             )
         );
     }
