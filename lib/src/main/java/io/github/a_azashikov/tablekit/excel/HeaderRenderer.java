@@ -110,12 +110,19 @@ class HeaderRenderer {
     private <T> int getMaxDepth(List<Column<T>> columns, int depth) {
         var result = depth;
         for (Column<T> column : columns) {
-            var currentDepth = switch (column) {
-                case GroupColumn<T> g -> getMaxDepth(g.getChildren(), depth + 1);
-                case DataColumn<T> d -> result;
-                case CollapsibleColumn<T> g -> getMaxDepth(g.getChildren(), depth);
-                default -> result;
-            };
+            var currentDepth = result;
+
+            if (column instanceof DataColumn) {
+                currentDepth = result;
+            }
+            if (column instanceof GroupColumn) {
+                var group = (GroupColumn<T>) column;
+                currentDepth = getMaxDepth(group.getChildren(), depth + 1);
+            }
+            if (column instanceof CollapsibleColumn) {
+                var group = (CollapsibleColumn<T>) column;
+                currentDepth = getMaxDepth(group.getChildren(), depth);
+            }
 
             result = Math.max(result, currentDepth);
         }

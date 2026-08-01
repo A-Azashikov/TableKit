@@ -59,7 +59,10 @@ public class Table<T> {
 
     @SuppressWarnings("unchecked")
     public static <T> TableBuilder<T> from(List<T> rows) {
-        var row = rows.getFirst();
+        if (rows.isEmpty()) {
+            return null;
+        }
+        var row = rows.get(0);
         var builder = new TableBuilder<T>((Class<T>) row.getClass());
 
         builder.addRows(rows);
