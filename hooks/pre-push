@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+#
+# Git pre-push hook for TableKit.
+#
+# Runs the Gradle build (compile + tests + check) before pushing.
+# The build task can be overridden via the GRADLE_TASKS environment variable:
+#
+#   GRADLE_TASKS="test" git push
+#   GRADLE_TASKS=":lib:test" git push
+#
+# To skip the check entirely:
+#
+#   SKIP_GIT_HOOKS=1 git push
+#
+set -euo pipefail
+
+# Skip if the push does not contain any refs (e.g. deleting a branch).
+zero_refs=1
+while read -r _local_ref _local_sha _remote_ref _remote_sha; do
+    if [ "$_local_ref" != "(delete)" ]; then
+        zero_refs=0
+        break
+    fi
+done < /dev/stdin
+
+if [ "$zero_refs" -eq 1 ]; then
+    echo "pre-push: no refs to push, skipping checks."
+    exit 0
+fi
+
+if [ "${SKIP_GIT_HOOKS:-0}" = "1" ]; then
+    echo "pre-push: SKIP_GIT_HOOKS=1, skipping checks."
+    exit 0
+fi
+
+repo_root="$(git rev-parse --show-toplevel)"
+if [ -z "$repo_root" ]; then
+    echo "pre-push: unable to determine repository root." >&2
+    exit 1
+fi
+
+tasks="${GRADLE_TASKS:-build}"
+
+echo "pre-push: running './gradlew $tasks' ..."
+if (cd "$repo_root" && ./gradlew $tasks); then
+    echo "pre-push: checks passed."
+else
+    echo "pre-push: checks FAILED. Push aborted." >&2
+    echo "pre-push: fix the issues or skip with SKIP_GIT_HOOKS=1." >&2
+    exit 1
+fi
