@@ -22,16 +22,18 @@ public class FormulaExample {
         var table = Table.from(rows)
             .name("Formula")
             .rowKey(r -> r.product())
-            .column("Product", Row::product)
-            .column("Price", Row::price)
-            .column("Quantity", Row::quantity)
+            .withKeyType(ColumnKeys.class)
+            .column(ColumnKeys.Product, "Product", Row::product)
+            .column(ColumnKeys.Price, "Price", Row::price)
+            .column(ColumnKeys.Quantity, "Quantity", Row::quantity)
             .column(ctx -> ctx
                 .title("Income")
+                .key(ColumnKeys.Income)
                 .formula((fc, r) -> {
                     if (!r.product().equals("Total")) {
-                        return fc.mul(fc.ref("Price"), fc.ref("Quantity"));
+                        return fc.mul(fc.ref(ColumnKeys.Price), fc.ref(ColumnKeys.Quantity));
                     }
-                    return fc.sum(fc.range(fc.ref("Income", "Phone"), fc.ref("Income", "Laptop")));
+                    return fc.sum(fc.range(fc.ref(ColumnKeys.Income, "Phone"), fc.ref(ColumnKeys.Income, "Laptop")));
                 })
             )
             .build();
@@ -48,4 +50,12 @@ public class FormulaExample {
         }
         System.out.println("Excel file created at: " + tempFilePath);
     }
+
+    static enum ColumnKeys {
+        Product,
+        Price,
+        Quantity,
+        Income,
+        ;
+    } 
 }

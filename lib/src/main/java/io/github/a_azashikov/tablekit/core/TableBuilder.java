@@ -8,7 +8,7 @@ import io.github.a_azashikov.tablekit.core.column.ChildrenContextBase;
 import io.github.a_azashikov.tablekit.core.column.Column;
 import io.github.a_azashikov.tablekit.core.utils.ColumnUtils;
 
-public final class TableBuilder<T> extends ChildrenContextBase<T, TableBuilder<T>> {
+public final class TableBuilder<T, K> extends ChildrenContextBase<T, K, TableBuilder<T, K>> {
     private String name = "";
     private Integer defaultColumnSize = null;
     private Function<T, String> rowKeyGetter = row -> row.toString();
@@ -20,40 +20,46 @@ public final class TableBuilder<T> extends ChildrenContextBase<T, TableBuilder<T
         this.classz = classz;
     }
 
-    public TableBuilder<T> name(String name) {
+    public TableBuilder<T, K> name(String name) {
         this.name = name;
 
         return this;
     }
 
-    public TableBuilder<T> defaultColumnSize(Integer size) {
+    public TableBuilder<T, K> defaultColumnSize(Integer size) {
         this.defaultColumnSize = size;
 
         return this;
     }
 
-    public TableBuilder<T> rowKey(Function<T, String> rowKeyGetter) {
+    public TableBuilder<T, K> rowKey(Function<T, String> rowKeyGetter) {
         this.rowKeyGetter = rowKeyGetter;
 
         return this;
     }
 
-    public TableBuilder<T> addRow(T row) {
+    public TableBuilder<T, K> addRow(T row) {
         this.rows.add(row);
 
         return this;
     }
 
-    public TableBuilder<T> addRows(List<T> rows) {
+    public TableBuilder<T, K> addRows(List<T> rows) {
         this.rows.addAll(rows);
 
         return this;
     }
 
-    public TableBuilder<T> autoColumns() {
+    public TableBuilder<T, K> autoColumns() {
         ColumnUtils.generateColumns(classz).forEach(this.columns::add);
 
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <CK> TableBuilder<T, CK> withKeyType(Class<CK> keyClassz) {
+
+        return (TableBuilder<T, CK>) this;
     }
 
     public Table<T> build() {
@@ -71,7 +77,7 @@ public final class TableBuilder<T> extends ChildrenContextBase<T, TableBuilder<T
     }
 
     @Override
-    public TableBuilder<T> addChild(Column<T> child) {
+    public TableBuilder<T, K> addChild(Column<T> child) {
         columns.add(child);
 
         return this;

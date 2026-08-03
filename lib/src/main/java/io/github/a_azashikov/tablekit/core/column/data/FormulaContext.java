@@ -8,21 +8,21 @@ import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.binary.*;
 import io.github.a_azashikov.tablekit.core.column.data.value.formula.operations.ternary.*;
 
-public class FormulaContext {
+public class FormulaContext<K> {
     public <V> Formula val(V value) {
         return new Val<V>(value);
     }
     
-    public CellReference ref(String columnKey) {
+    public CellReference ref(K columnKey) {
         return ref(columnKey, null);
     }
     
-    public CellReference ref(String columnKey, String rowKey) {
+    public CellReference ref(K columnKey, String rowKey) {
         return ref(columnKey, rowKey, null);
     }
     
-    public CellReference ref(String columnKey, String rowKey, String tableName) {
-        return new CellReference(columnKey, rowKey, tableName);
+    public CellReference ref(K columnKey, String rowKey, String tableName) {
+        return new CellReference(columnKey.toString(), rowKey, tableName);
     }
     
     // Binary operations

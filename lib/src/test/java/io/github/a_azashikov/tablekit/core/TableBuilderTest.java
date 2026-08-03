@@ -10,9 +10,21 @@ import io.github.a_azashikov.tablekit.core.column.data.DataColumn;
 
 class TableBuilderTest {
 
+    public static enum Keys {
+        A,
+        B,
+        C,
+        ;
+    }
+
     @Test
     void shouldBuildTableWithDefaultValues() {
         var table = new TableBuilder<>(String.class).build();
+
+        Table.of(String.class)
+            .withKeyType(Keys.class)
+            .group(g -> g.column(c -> c.key(Keys.A)))
+            .group(g -> g.column(c -> c.key(Keys.B).formula((fc, r) -> fc.ref(Keys.A, "ads"))));
         assertEquals("", table.getName());
         assertTrue(table.getColumns().isEmpty());
         assertTrue(table.getRows().isEmpty());
@@ -112,7 +124,7 @@ class TableBuilderTest {
 
     @Test
     void shouldAutoGenerateColumns_whenAutoColumnsCalled() {
-        var table = new TableBuilder<TestRow>(TestRow.class)
+        var table = new TableBuilder<TestRow, Object>(TestRow.class)
             .autoColumns()
             .build();
         assertEquals(2, table.getColumns().size());

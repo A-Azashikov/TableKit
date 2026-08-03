@@ -105,19 +105,22 @@ var table = Table.from(rows)
 var table = Table.from(rows)
     .name("Formula")
     .rowKey(r -> r.product())
-    .column("Product", Row::product)
-    .column("Price", Row::price)
-    .column("Quantity", Row::quantity)
+    .withKeyType(ColumnKeys.class)
+    .column(ColumnKeys.Product, "Product", Row::product)
+    .column(ColumnKeys.Price, "Price", Row::price)
+    .column(ColumnKeys.Quantity, "Quantity", Row::quantity)
     .column(ctx -> ctx
         .title("Income")
+        .key(ColumnKeys.Income)
         .formula((fc, r) -> {
             if (!r.product().equals("Total")) {
-                return fc.mul(fc.ref("Price"), fc.ref("Quantity"));
+                return fc.mul(fc.ref(ColumnKeys.Price), fc.ref(ColumnKeys.Quantity));
             }
-            return fc.sum(fc.range(fc.ref("Income", "Phone"), fc.ref("Income", "Laptop")));
+            return fc.sum(fc.range(fc.ref(ColumnKeys.Income, "Phone"), fc.ref(ColumnKeys.Income, "Laptop")));
         })
     )
     .build();
+
 ```
 
 Ссылки на ячейки в формулах автоматически резолвятся в реальные Excel-координаты (например, `B2`, `C3`) при рендеринге.
@@ -147,14 +150,16 @@ List<String> rows = generateRows();
 // Значения для каждого дня диапазона по строкам
 Map<RowDayDataKey, Double> values = generateData(rows, startDate, endDate);
 
-TableBuilder<String> builder = Table.from(rows)
+TableBuilder<String, ColumnKey> builder = Table.from(rows)
     .name("Daily Sales")
-    .column("Name", String::valueOf);
+    .withKeyType(ColumnKey.class)
+    .column(StaticColumnKey.Name, "Name", String::valueOf);
 
 // Динамически создаём по одной колонке на каждый день диапазона
 for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
     LocalDate day = date;
     builder.column(
+        new DynamicColumnKey(day),
         day.format(HEADER_FORMAT),
         row -> values.get(new RowDayDataKey(row, day))
     );

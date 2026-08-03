@@ -38,7 +38,7 @@ class DataRenderer {
         fillCellReferences(table, columns, firstRowIndex);
 
         for (int i = 0; i < table.getRows().size(); i++) {
-            var tableRow = table.getRows().get(i);
+            T tableRow = table.getRows().get(i);
             var row = sheet.createRow(firstRowIndex + i);
             var formulaAstExcelVisitor = new FormulaAstExcelVisitor<>(this.cellReferenceMap, tableRow, table);
             

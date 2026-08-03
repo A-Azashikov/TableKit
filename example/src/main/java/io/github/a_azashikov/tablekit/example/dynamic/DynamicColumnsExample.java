@@ -27,14 +27,16 @@ public class DynamicColumnsExample {
         List<String> rows = generateRows();
         Map<RowDayDataKey, Double> values = generateData(rows, startDate, endDate);
 
-        TableBuilder<String> builder = Table.from(rows)
+        TableBuilder<String, ColumnKey> builder = Table.from(rows)
             .name("Daily Sales")
-            .column("Name", String::valueOf);
+            .withKeyType(ColumnKey.class)
+            .column(StaticColumnKey.Name, "Name", String::valueOf);
 
         // Dynamically create one column per day between startDate and endDate
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
             LocalDate day = date;
             builder.column(
+                new DynamicColumnKey(day),
                 day.format(HEADER_FORMAT),
                 row -> values.get(new RowDayDataKey(row, day))
             );
@@ -77,4 +79,12 @@ public class DynamicColumnsExample {
     }
 
     private static record RowDayDataKey(String row, LocalDate day) {}
+    private static interface ColumnKey {}
+    private static enum StaticColumnKey implements ColumnKey {
+        Name,
+        ;
+    }
+    private static record DynamicColumnKey(
+        LocalDate day
+    ) implements ColumnKey {}
 }

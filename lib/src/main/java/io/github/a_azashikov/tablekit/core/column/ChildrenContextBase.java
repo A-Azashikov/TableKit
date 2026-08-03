@@ -11,10 +11,10 @@ import io.github.a_azashikov.tablekit.core.column.group.CustomizeGroupContext;
 import io.github.a_azashikov.tablekit.core.column.group.GroupColumn;
 
 @SuppressWarnings("unchecked")
-public abstract class ChildrenContextBase<T, Self extends ChildrenContextBase<T, Self>> {
-    public Self column(Consumer<CustomizeDataContext<T>> customizer) {
+public abstract class ChildrenContextBase<T, K, Self extends ChildrenContextBase<T, K, Self>> {
+    public Self column(Consumer<CustomizeDataContext<T, K>> customizer) {
         var column = new DataColumn<T>();
-        customizer.accept(new CustomizeDataContext<T>(column));
+        customizer.accept(new CustomizeDataContext<T, K>(column));
         addChild(column);
 
         return (Self) this;
@@ -24,7 +24,11 @@ public abstract class ChildrenContextBase<T, Self extends ChildrenContextBase<T,
         return column(ctx -> ctx.title(title).value(valueGetter));
     }
 
-    public Self group(Consumer<CustomizeGroupContext<T>> customizer) {
+    public Self column(K key, String title, Function<T, Object> valueGetter) {
+        return column(ctx -> ctx.key(key).title(title).value(valueGetter));
+    }
+
+    public Self group(Consumer<CustomizeGroupContext<T, K>> customizer) {
         var group = new GroupColumn<T>();
         addChild(group);
         customizer.accept(new CustomizeGroupContext<>(group));
@@ -32,11 +36,11 @@ public abstract class ChildrenContextBase<T, Self extends ChildrenContextBase<T,
         return (Self) this;
     }
 
-    public Self group(String title, Consumer<CustomizeGroupContext<T>> customizer) {
+    public Self group(String title, Consumer<CustomizeGroupContext<T, K>> customizer) {
         return group(c -> customizer.accept(c.title(title)));
     }
 
-    public Self collapsible(Consumer<CustomizeCollapsibleContext<T>> customizer) {
+    public Self collapsible(Consumer<CustomizeCollapsibleContext<T, K>> customizer) {
         var collapsible = new CollapsibleColumn<T>();
         customizer.accept(new CustomizeCollapsibleContext<>(collapsible));
         addChild(collapsible);

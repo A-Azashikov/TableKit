@@ -12,14 +12,14 @@ import io.github.a_azashikov.tablekit.core.column.data.value.formula.FormulaValu
 import io.github.a_azashikov.tablekit.core.style.CellStyleDefinition;
 import io.github.a_azashikov.tablekit.core.utils.ValueUtils;
 
-public class CustomizeDataContext<T> {
+public class CustomizeDataContext<T, K> {
     private final DataColumn<T> column;
     
     public CustomizeDataContext(DataColumn<T> column) {
         this.column = column;
     }
 
-    public CustomizeDataContext<T> title(String title) {
+    public CustomizeDataContext<T, K> title(String title) {
         this.column.setTitle(title);
 
         if (this.column.getKey().equals("")) {
@@ -29,63 +29,63 @@ public class CustomizeDataContext<T> {
         return this;
     }
     
-    public CustomizeDataContext<T> key(String key) {
-        this.column.setKey(key);
+    public CustomizeDataContext<T, K> key(K key) {
+        this.column.setKey(key.toString());
 
         return this;
     }
     
-    public CustomizeDataContext<T> size(Integer size) {
+    public CustomizeDataContext<T, K> size(Integer size) {
         this.column.setSize(size);
 
         return this;
     }
     
-    public CustomizeDataContext<T> style(CellStyleDefinition headerStyle) {
+    public CustomizeDataContext<T, K> style(CellStyleDefinition headerStyle) {
         this.column.setHeaderStyle(headerStyle);
 
         return this;
     }
     
-    public CustomizeDataContext<T> cellStyle(BiFunction<T, Integer, CellStyleDefinition> cellStyleGetter) {
+    public CustomizeDataContext<T, K> cellStyle(BiFunction<T, Integer, CellStyleDefinition> cellStyleGetter) {
         this.column.setStyleGetter(cellStyleGetter);
 
         return this;
     }
     
-    public CustomizeDataContext<T> value(Function<T, Object> stringValueGetter) {
+    public CustomizeDataContext<T, K> value(Function<T, Object> stringValueGetter) {
         this.column.setValueGetter(stringValueGetter.andThen(ValueUtils::mapValue));
 
         return this;
     }
     
-    public CustomizeDataContext<T> string(Function<T, String> stringValueGetter) {
+    public CustomizeDataContext<T, K> string(Function<T, String> stringValueGetter) {
         this.column.setValueGetter(stringValueGetter.andThen(StringValue::new));
 
         return this;
     }
     
-    public CustomizeDataContext<T> number(Function<T, Number> numberValueGetter) {
+    public CustomizeDataContext<T, K> number(Function<T, Number> numberValueGetter) {
         this.column.setValueGetter(numberValueGetter.andThen(NumericValue::new));
 
         return this;
     }
     
-    public CustomizeDataContext<T> date(Function<T, Date> dateValueGetter) {
+    public CustomizeDataContext<T, K> date(Function<T, Date> dateValueGetter) {
         this.column.setValueGetter(dateValueGetter.andThen(DateValue::new));
 
         return this;
     }
     
-    public CustomizeDataContext<T> formula(BiFunction<FormulaContext, T, Formula> formulaBuilder) {
+    public CustomizeDataContext<T, K> formula(BiFunction<FormulaContext<K>, T, Formula> formulaBuilder) {
         this.column.setValueGetter(
-            r -> new FormulaValue(formulaBuilder.apply(new FormulaContext(), r))
+            r -> new FormulaValue(formulaBuilder.apply(new FormulaContext<>(), r))
         );
 
         return this;
     }
     
-    public CustomizeDataContext<T> formula(Formula formula) {
+    public CustomizeDataContext<T, K> formula(Formula formula) {
         this.column.setValueGetter(
             r -> new FormulaValue(formula)
         );
